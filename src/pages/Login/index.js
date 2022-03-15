@@ -1,7 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Header from '../../Components/Header';
 
-const Login = ()=>{
+import api from '../../services/api';
 
+const Login = () => {
+    const [credenciais, setCredenciais] = useState({
+        email: '',
+        senha: ''
+    });
+
+    const login = async () => {
+        try {
+            const response = await api.post('/usuario/login', credenciais);
+            const res = response.data;
+            if(res.error){
+                alert(res.message);
+                return false;
+            }
+
+            localStorage.setItem('@user', JSON.stringify(res.usuario));
+            window.location.reload();
+        } catch (error) {
+            alert(error.message);
+        }
+    }
     return(
     <div 
         class="container-fluid bg_filmes"
@@ -10,50 +32,60 @@ const Login = ()=>{
             height: '100%',
         }}
     >
-        <header class="row">
-            <img class="logoViniflix" src={require('../../assets/images/logo.png')}/>
-        </header>
+        <Header hideMenu/>
         <div id="caixa_login" class="col-4 offset-4">
-            <h1 class="text-white">Entrar</h1>
+            <h1 className="text-white">Entrar</h1>
             <br />
-            <form>
+            <>
                 <input
-                    id="login" 
+                    id="input_email" 
                     type="email"
-                    class="form-control form-control-lg"
+                    className="form-control form-control-lg"
                     placeholder="Email ou número de telefone"
+                    onChange={(e) => {
+                        setCredenciais({
+                            ...credenciais,
+                            email: e.target.value
+                        });
+                    }}
                 />
                 <br />
                 <input
                     id="password" 
                     type="password"
-                    class="form-control form-control-lg"
+                    className="form-control form-control-lg"
                     placeholder="Senha"
+                    onChange={(e) => {
+                        setCredenciais({
+                            ...credenciais,
+                            senha: e.target.value
+                        });
+                    }}
                 />
                 <br />
-                <button class="btn btn-lg w-100 btn-danger btn_entrar">Entrar</button> 
-                <div class="row mt-2">
-                    <div class="col text-muted">
+                <button className="btn btn-lg w-100 btn-danger btn_entrar" onClick={login}>Entrar</button> 
+                <div className="row mt-2">
+                    <div className="col text-muted">
                         <input type="checkbox" /> Lembrar de mim.
                     </div>
-                    <div class="col text-right">
-                        <a href="#" class="text-muted">Precisa de ajuda?</a>
+                    <div className="col text-right">
+                        <a href="#" className="text-muted">Precisa de ajuda?</a>
                     </div>
                 </div>
                 <br />
-                <div class="text-left">
+                <div className="text-left">
                     <img id="facebook-logo" src={require('../../assets/images/Facebook_logo_(square).png')} />
-                    <a href="#" class="text-muted">Conectar com facebook.</a>
+                    <a href="#" className="text-muted">Conectar com facebook.</a>
                 </div>
                 <br />
-                <div class="text-left">
-                    <p class="text-muted">Novo por aqui? <a class="text-white" href="#">Assine Agora</a>.</p>
+                <div className="text-left">
+                    <p className="text-muted">Novo por aqui? <a className="text-white" href="#">Assine Agora</a>.</p>
                 </div>
                 <div>
-                    <p class="text-muted">Esta página é protegida pelo Google reCAPTCHA 
+                    <p className="text-muted">Esta página é protegida pelo Google reCAPTCHA 
                         para garantir que você não é um robô. <a href="#">Saiba mais.</a></p>
                 </div>
-            </form>
+            </>
         </div>
     </div>
     );
